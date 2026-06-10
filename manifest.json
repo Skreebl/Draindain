@@ -1,9 +1,9 @@
 {
   "id": "calculadora v2",
-  "name": "DrainCalc",
-  "short_name": "Draincalc",
-  "start_url": "/Draincalc/index.html",
-  "scope": "/Draincalc/",
+  "name": "DrainCalc 2.0",
+  "short_name": "DrainCalc 2.0",
+  "start_url": "/DrainCalc 2.0/index.html",
+  "scope": "/Draincalc 2.0/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#000000",
