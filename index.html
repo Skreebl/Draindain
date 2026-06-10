@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rega</title>
+    <title>BoraRegar</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -24,8 +24,7 @@
             border: 1px solid #ccc;
             border-radius: 5px;
             margin-bottom: 20px;
-            
-            }
+        }
         .container {
             display: flex;
             flex-direction: column;
@@ -90,7 +89,7 @@
             width: 90%;
         }
         .action-buttons button {
-            padding: 20px;
+            padding: 15px;
             font-size: 16px;
             cursor: pointer;
             border-radius: 5px;
@@ -102,44 +101,34 @@
         .action-buttons button:active {
             background-color: #0056b3;
         }
-        .screenshot-button button {
-            background-color: #28a745;
-        }
-        .screenshot-button button:active {
-            background-color: #218838;
-        }
     </style>
-    <script src="https://cdn.jsdelivr.net/npm/html2canvas"></script>
-<link rel="manifest" href="manifest.json" />
-<meta name="mobile-web-app-capable" content="yes" />
-<meta name="apple-mobile-web-app-capable" content="yes" />
-<meta name="application-name" content="PWA Workshop" />
-<meta name="apple-mobile-web-app-title" content="PWA Workshop" />
-<meta name="msapplication-starturl" content="/index.html" />
-<meta name="viewport"
-  content="width=device-width, initial-scale=1, shrink-to-fit=no"
-/>
+    <link rel="manifest" href="manifest.json" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="application-name" content="BoraRegar" />
+    <meta name="apple-mobile-web-app-title" content="BoraRegar" />
+    <meta name="msapplication-starturl" content="/index.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
 </head>
 <body>
-        <div class="time">
-            <a href="https://24timezones.com" style="text-decoration: none" class="clock24" id="tz24-1757844616-c1133-eyJob3VydHlwZSI6IjI0Iiwic2hvd2RhdGUiOiIxIiwic2hvd3NlY29uZHMiOiIxIiwic2hvd3RpbWV6b25lIjoiMCIsInR5cGUiOiJkIiwibGFuZyI6InB0In0=" title="Relógio" target="_blank" rel="nofollow"></a>
-<script type="text/javascript" src="//w.24timezones.com/l.js" async></script>
-          </div>  
-    
-        <div class="container">
-        <!-- VALVULA -->
+    <div class="time">
+        <a href="https://24timezones.com" style="text-decoration: none" class="clock24" id="tz24-1757844616-c1133-eyJob3VydHlwZSI6IjI0Iiwic2hvd2RhdGUiOiIxIiwic2hvd3NlY29uZHMiOiIxIiwic2hvd3RpbWV6b25lIjoiMCIsInR5cGUiOiJkIiwibGFuZyI6InB0In0=" title="Relógio" target="_blank" rel="nofollow"></a>
+        <script type="text/javascript" src="//w.24timezones.com/l.js" async></script>
+    </div>  
+
+    <div class="container">
         <div class="column">
             <label for="col0">VALVULA</label>
             <input type="number" id="col0" placeholder=" - " readonly>
         </div>
-        <!-- células -->
+        
         <div class="columns">
             <div class="column">
                 <label for="col1">Entrada</label>
                 <input type="number" id="col1" placeholder=" - " readonly>
             </div>
             <div class="column">
-                <label for="col2">Saida</label>
+                <label for="col2">Saída</label>
                 <input type="number" id="col2" placeholder=" - " readonly>
             </div>
             <div class="column">
@@ -147,12 +136,10 @@
                 <input type="number" id="col3" placeholder=" - " readonly>
             </div>
         </div>
-            <div id="result-box"> Introduza os dados </div>
+        <div id="result-box"> Introduza os dados </div>
     </div>
-    
 
     <div class="keyboard">
-        <!-- Keyboard -->
         <div class="key" onclick="addNumber(1)">1</div>
         <div class="key" onclick="addNumber(2)">2</div>
         <div class="key" onclick="addNumber(3)">3</div>
@@ -167,19 +154,19 @@
         <div class="key" onclick="deleteLast()">⌫</div>
     </div>
 
- <div class="action-buttons">
+    <div class="action-buttons">
         <button onclick="nextColumn()">Próximo</button>
         <button id="save-btn" style="background-color: #28a745; color: white;">Guardar Resultado</button>
     </div>
 
-    <div id="history-container" style="width: 90%; margin-top: 20px; display: flex; flex-direction: column; align-items: center; text-align: left;">
+    <div id="history-container" style="width: 90%; margin-top: 20px; margin-bottom: 30px; display: flex; flex-direction: column; align-items: center; text-align: left;">
         <h3 style="margin-bottom: 10px; text-align: center;">Histórico de Drenagem</h3>
         <div id="history-list" style="width: 100%; border-radius: 5px; min-height: 50px; padding: 5px; box-sizing: border-box;">
             </div>
         <button onclick="clearHistory()" style="margin-top: 15px; padding: 10px; background-color: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer; width: 100%;">Limpar Tudo</button>
     </div>
 
-  <script>
+    <script>
         let activeInput = document.getElementById("col0"); 
 
         document.querySelectorAll("input").forEach(input => {
@@ -199,7 +186,7 @@
             document.querySelectorAll("input").forEach(input => {
                 input.value = "";
             });
-            document.getElementById("result-box").textContent = "Resultado: ---";
+            document.getElementById("result-box").textContent = "Introduza os dados";
             activeInput = document.getElementById("col0");
             activeInput.focus(); 
         }
@@ -207,6 +194,7 @@
         function deleteLast() {
             if (activeInput) {
                 activeInput.value = activeInput.value.slice(0, -1);
+                checkAndCalculate(); 
             }
         }
 
@@ -217,6 +205,8 @@
 
             if (col1 && col2 && col3) {
                 calculate();
+            } else {
+                document.getElementById("result-box").textContent = "Introduza os dados";
             }
         }
 
@@ -231,7 +221,7 @@
             }
 
             const result = (col2Value / col1Value / col3Value) * 100;
-            document.getElementById("result-box").textContent = ` ${result.toFixed(2)}%`;
+            document.getElementById("result-box").textContent = `${result.toFixed(2)}%`;
         }
 
         function nextColumn() {
@@ -242,27 +232,26 @@
             activeInput.focus(); 
         }
 
-        document.getElementById("screenshot-btn").addEventListener("click", function () {
-      html2canvas(document.body).then(canvas => {
-// Функція для збереження результату
+        // ----- ЛОГІКА ЗБЕРЕЖЕННЯ (БЕЗ ВАЗ) -----
         document.getElementById("save-btn").addEventListener("click", function() {
             const valvula = document.getElementById("col0").value;
             const entrada = document.getElementById("col1").value;
             const saida = document.getElementById("col2").value;
             const resultText = document.getElementById("result-box").textContent.trim();
 
-            // Перевіряємо, чи всі потрібні дані введені
-            if (!valvula || !entrada || !saida || resultText === "ERROR!" || resultText === "Introduza os dados") {
-                alert("Por favor, preencha a Válvula, Entrada, Saída e certifique-se de que o resultado está correto!");
+            // Перевіряємо всі поля, щоб користувач не забув ввести Vasos
+            const vasos = document.getElementById("col3").value;
+
+            if (!valvula || !entrada || !saida || !vasos || resultText === "ERROR!" || resultText === "Introduza os dados") {
+                alert("Por favor, preencha todos os campos e certifique-se de que o resultado está correto!");
                 return;
             }
 
-            // Отримуємо поточну дату та час
             const now = new Date();
-            const dateStr = now.toLocaleDateString('pt-PT'); // Формат: 10/06/2026
+            const dateStr = now.toLocaleDateString('pt-PT'); 
             const timeStr = now.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' });
 
-            // Створюємо запис БЕЗ vazos (col3)
+            // Формуємо запис для історії. Як бачиш, vasos тут немає.
             const entry = {
                 date: dateStr,
                 time: timeStr,
@@ -272,30 +261,25 @@
                 result: resultText
             };
 
-            // Завантажуємо історію, додаємо новий запис і зберігаємо
-            let history = JSON.parse(localStorage.getItem('regaDataV2')) || [];
-            history.unshift(entry); // Додаємо на початок
-            localStorage.setItem('regaDataV2', JSON.stringify(history));
-            
-            // Очищуємо поля після збереження (опціонально, розкоментуй якщо потрібно)
-            // clearAll(); 
+            // Зберігаємо під новим ключем 'regaDataV3' щоб уникнути конфліктів зі старими даними
+            let history = JSON.parse(localStorage.getItem('regaDataV3')) || [];
+            history.unshift(entry); 
+            localStorage.setItem('regaDataV3', JSON.stringify(history));
             
             updateHistoryUI();
         });
 
-        // Функція побудови ієрархічного списку
         function updateHistoryUI() {
             const historyList = document.getElementById("history-list");
             historyList.innerHTML = ""; 
 
-            let history = JSON.parse(localStorage.getItem('regaDataV2')) || [];
+            let history = JSON.parse(localStorage.getItem('regaDataV3')) || [];
 
             if (history.length === 0) {
                 historyList.innerHTML = "<div style='text-align: center; color: #777; background: #fff; padding: 10px; border: 1px solid #ccc; border-radius: 5px;'>Sem dados guardados</div>";
                 return;
             }
 
-            // Групуємо дані: спочатку по Днях, потім по Валвулах
             const groupedData = history.reduce((acc, curr) => {
                 if (!acc[curr.date]) acc[curr.date] = {};
                 if (!acc[curr.date][curr.valvula]) acc[curr.date][curr.valvula] = [];
@@ -303,9 +287,7 @@
                 return acc;
             }, {});
 
-            // Генеруємо HTML-структуру
             for (const [date, valves] of Object.entries(groupedData)) {
-                // Блок Дня
                 const dateDetails = document.createElement("details");
                 dateDetails.style.marginBottom = "10px";
                 dateDetails.innerHTML = `<summary style="font-weight: bold; font-size: 16px; cursor: pointer; padding: 10px; background: #007bff; color: white; border-radius: 5px; outline: none;">📅 Data: ${date}</summary>`;
@@ -319,7 +301,6 @@
                 dateContainer.style.borderBottomRightRadius = "5px";
 
                 for (const [valve, entries] of Object.entries(valves)) {
-                    // Блок Валвули всередині Дня
                     const valveDetails = document.createElement("details");
                     valveDetails.style.marginBottom = "8px";
                     valveDetails.innerHTML = `<summary style="font-weight: bold; font-size: 15px; cursor: pointer; padding: 8px; background: #e9ecef; border-radius: 5px; outline: none; border: 1px solid #ddd;">💧 Válvula ${valve}</summary>`;
@@ -330,7 +311,6 @@
                     entriesList.style.border = "1px solid #ddd";
                     entriesList.style.borderTop = "none";
 
-                    // Список замірів (Час, Entrada, Saída, Відсоток)
                     entries.forEach(entry => {
                         const row = document.createElement("div");
                         row.style.padding = "8px 0";
@@ -340,7 +320,6 @@
                         entriesList.appendChild(row);
                     });
 
-                    // Забираємо нижню лінію в останнього елемента
                     if(entriesList.lastChild) entriesList.lastChild.style.borderBottom = "none";
 
                     valveDetails.appendChild(entriesList);
@@ -354,15 +333,12 @@
 
         function clearHistory() {
             if(confirm("Tem a certeza que deseja limpar todo o histórico?")) {
-                localStorage.removeItem('regaDataV2');
+                localStorage.removeItem('regaDataV3');
                 updateHistoryUI();
             }
         }
 
         window.addEventListener('load', updateHistoryUI);
-        
-                
     </script>
-    
 </body>
 </html>
