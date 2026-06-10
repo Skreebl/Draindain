@@ -2,7 +2,7 @@
   "id": "calculadora v2",
   "name": "DrainCalc 2.0",
   "short_name": "DrainCalc 2.0",
-  "start_url": "https://skreebl.github.io/Draindain/",
+  "start_url": "/Draindain/index.html",
   "scope": "/Draindain/",
   "display": "standalone",
   "background_color": "#ffffff",
