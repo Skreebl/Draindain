@@ -415,6 +415,7 @@
                 valvula: valvula,
                 entrada: entrada,
                 saida: saida,
+                vasos: vasos, // Тепер ми "тихо" зберігаємо вази для загального підрахунку
                 result: resultText
             };
 
@@ -437,7 +438,6 @@
         function updateHistoryUI() {
             const historyList = document.getElementById("history-list");
 
-            // ЗБЕРІГАЄМО СТАН: читаємо, які списки зараз відкриті
             let openItems = [];
             historyList.querySelectorAll('details[open]').forEach(details => {
                 if (details.dataset.id) openItems.push(details.dataset.id);
@@ -463,9 +463,9 @@
 
             for (const [date, valves] of Object.entries(groupedData)) {
                 const dateDetails = document.createElement("details");
-                const dateId = `date-${date}`; // Унікальний ID для дати
+                const dateId = `date-${date}`; 
                 dateDetails.dataset.id = dateId; 
-                if (openItems.includes(dateId)) dateDetails.open = true; // Відновлюємо стан
+                if (openItems.includes(dateId)) dateDetails.open = true; 
 
                 dateDetails.style.marginBottom = "12px";
                 dateDetails.innerHTML = `<summary style="font-weight: bold; font-size: 16px; cursor: pointer; padding: 12px; background: #4285F4; color: white; border-radius: 8px; outline: none; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">📅 Data: ${date}</summary>`;
@@ -479,13 +479,50 @@
                 dateContainer.style.borderBottomRightRadius = "8px";
 
                 for (const [valve, entries] of Object.entries(valves)) {
+                    
+                    // --- ЛОГІКА ПІДРАХУНКУ СУМ ДЛЯ ЗАГОЛОВКА ВАЛВУЛИ ---
+                    let sumEntrada = 0;
+                    let sumSaida = 0;
+                    let vasosForValve = 1;
+
+                    entries.forEach(entry => {
+                        sumEntrada += parseFloat(entry.entrada) || 0;
+                        sumSaida += parseFloat(entry.saida) || 0;
+                        
+                        // Якщо вази збережені, беремо їх
+                        if (entry.vasos) {
+                            vasosForValve = parseFloat(entry.vasos);
+                        } else {
+                            // Для старих записів, де вази ще не зберігались, вираховуємо їх зворотним шляхом
+                            let ent = parseFloat(entry.entrada);
+                            let sai = parseFloat(entry.saida);
+                            let res = parseFloat(entry.result); 
+                            if (ent > 0 && res > 0) {
+                                vasosForValve = (sai / ent) * 100 / res;
+                            }
+                        }
+                    });
+
+                    // Рахуємо загальний відсоток для всієї валвули з логікою ваз
+                    let valvePercentage = 0;
+                    if (sumEntrada > 0 && vasosForValve > 0) {
+                        valvePercentage = (sumSaida / sumEntrada / vasosForValve) * 100;
+                    }
+
                     const valveDetails = document.createElement("details");
-                    const valveId = `valve-${date}-${valve}`; // Унікальний ID для валвули
+                    const valveId = `valve-${date}-${valve}`; 
                     valveDetails.dataset.id = valveId;
-                    if (openItems.includes(valveId)) valveDetails.open = true; // Відновлюємо стан
+                    if (openItems.includes(valveId)) valveDetails.open = true; 
 
                     valveDetails.style.marginBottom = "8px";
-                    valveDetails.innerHTML = `<summary style="font-weight: bold; font-size: 15px; cursor: pointer; padding: 10px; background: #f1f3f4; border-radius: 6px; outline: none; border: 1px solid #ddd;">💧 Válvula ${valve}</summary>`;
+                    
+                    // ДОДАЄМО СУМИ ТА ВІДСОТОК ДО ЗАГОЛОВКА
+                    valveDetails.innerHTML = `<summary style="font-weight: bold; font-size: 15px; cursor: pointer; padding: 10px; background: #f1f3f4; border-radius: 6px; outline: none; border: 1px solid #ddd;">
+                        💧 Válvula ${valve} 
+                        <span style="font-size: 13px; font-weight: normal; color: #555; margin-left: 2px;">
+                            (E: ${sumEntrada} | S: ${sumSaida} | <strong style="color: #4285F4; font-size: 14px;">${valvePercentage.toFixed(2)}%</strong>)
+                        </span>
+                    </summary>`;
                     
                     const entriesList = document.createElement("div");
                     entriesList.style.padding = "0";
