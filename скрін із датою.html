@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Скріншот веб-сторінки</title>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas"></script>
+</head>
+<body>
+  <h1>Скріншот сторінки</h1>
+  <p>Натисніть кнопку, щоб зробити скріншот і зберегти його на пристрій.</p>
+  <button id="screenshot-btn">Зробити скріншот</button>
+
+  <script>
+    document.getElementById("screenshot-btn").addEventListener("click", function () {
+      html2canvas(document.body).then(canvas => {
+        // Створення зображення
+        const imageData = canvas.toDataURL("image/png");
+
+        // Генерація дати та часу
+        const now = new Date();
+        const timestamp = now.toISOString().replace(/[:.-]/g, "_"); // Формат YYYY-MM-DD_HH_MM_SS
+
+        // Створення посилання для завантаження
+        const link = document.createElement("a");
+        link.download = `screenshot_${timestamp}.png`; // Ім'я файлу з часом
+        link.href = imageData;
+        link.click(); // Симулюємо натискання
+      });
+    });
+  </script>
+</body>
+</html>

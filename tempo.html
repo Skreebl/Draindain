@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rega</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f9f9f9;
+        }
+        .time {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 90%;
+            height: 45px;
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            
+            }
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-bottom: 20px;
+            align-items: center;
+            width: 75%;
+        }
+        .columns {
+            display: flex;
+            justify-content: space-around;
+            width: 120%;
+        }
+        .column {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        input {
+            width: 80px;
+            padding: 5px;
+            margin-top: 5px;
+            text-align: center;
+            font-size: 16px;
+        }
+        .keyboard {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+            width: 90%;
+        }
+        .key {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 60px;
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 20px;
+            cursor: pointer;
+        }
+        .key:active {
+            background-color: #ddd;
+        }
+        #result-box {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            width: 90%;
+            text-align: center;
+            font-weight: bold;
+            background-color: #fff;
+        }
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+            width: 90%;
+        }
+        .action-buttons button {
+            padding: 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            text-align: center;
+        }
+        .action-buttons button:active {
+            background-color: #0056b3;
+        }
+        .screenshot-button button {
+            background-color: #28a745;
+        }
+        .screenshot-button button:active {
+            background-color: #218838;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas"></script>
+</head>
+<body>
+        <div class="time">
+            <a href="https://24timezones.com" style="text-decoration: none" class="clock24" id="tz24-1757844616-c1133-eyJob3VydHlwZSI6IjI0Iiwic2hvd2RhdGUiOiIxIiwic2hvd3NlY29uZHMiOiIxIiwic2hvd3RpbWV6b25lIjoiMCIsInR5cGUiOiJkIiwibGFuZyI6InB0In0=" title="Relógio" target="_blank" rel="nofollow"></a>
+<script type="text/javascript" src="//w.24timezones.com/l.js" async></script>
+          </div>  
+    
+        <div class="container">
+        <!-- VALVULA -->
+        <div class="column">
+            <label for="col0">VALVULA</label>
+            <input type="number" id="col0" placeholder=" - " readonly>
+        </div>
+        <!-- células -->
+        <div class="columns">
+            <div class="column">
+                <label for="col1">Entrada</label>
+                <input type="number" id="col1" placeholder=" - " readonly>
+            </div>
+            <div class="column">
+                <label for="col2">Saida</label>
+                <input type="number" id="col2" placeholder=" - " readonly>
+            </div>
+            <div class="column">
+                <label for="col3">Vasos</label>
+                <input type="number" id="col3" placeholder=" - " readonly>
+            </div>
+        </div>
+            <div id="result-box"> Introduza os dados </div>
+    </div>
+    
+
+    <div class="keyboard">
+    <!-- Keyboard -->
+    <div class="key" onclick="addNumber(1)">1</div>
+    <div class="key" onclick="addNumber(2)">2</div>
+    <div class="key" onclick="addNumber(3)">3</div>
+    <div class="key" onclick="addNumber(4)">4</div>
+    <div class="key" onclick="addNumber(5)">5</div>
+    <div class="key" onclick="addNumber(6)">6</div>
+    <div class="key" onclick="addNumber(7)">7</div>
+    <div class="key" onclick="addNumber(8)">8</div>
+    <div class="key" onclick="addNumber(9)">9</div>
+    <div class="key" onclick="addDot()">.</div> <!-- Замінили на крапку -->
+    <div class="key" onclick="addNumber(0)">0</div>
+    <div class="key" onclick="deleteLast()">⌫</div>
+</div>
+
+    <div class="action-buttons">
+        <button onclick="nextColumn()">Próximo</button>
+        <button id="screenshot-btn" class="screenshot-button">Screenshot</button>
+    </div>
+
+    <script>
+        function addDot(&middot;) {
+     if (activeInput) { 
+        activeInput.value += '&middot;';
+        checkAndCalculate();
+    }
+}
+        let activeInput = document.getElementById("col0"); // Початково активне поле
+
+// Кожен раз при натисканні на інпут встановлюється активне поле
+document.querySelectorAll("input").forEach(input => {
+    input.addEventListener("click", () => {
+        activeInput = input;
+    });
+});
+
+function addNumber(num) {
+    if (activeInput) {
+        activeInput.value += num;
+        checkAndCalculate(); // Оновлюємо результат
+    }
+}
+
+function addDot() {
+    // Додаємо крапку лише, якщо її ще немає в значенні
+    if (activeInput && !activeInput.value.includes('.')) {
+        activeInput.value += '.';
+        checkAndCalculate(); // Оновлюємо результат
+    }
+}
+
+function deleteLast() {
+    if (activeInput) {
+        activeInput.value = activeInput.value.slice(0, -1); // Видаляємо останній символ
+        checkAndCalculate(); // Оновлюємо результат
+    }
+}
+
+function checkAndCalculate() {
+    const value = activeInput.value;
+    // Можна додати логіку для обчислень або перевірки значення
+    document.getElementById("result-box").textContent = `Resultado: ${value}`;
+}
+
+        function calculate() {
+            const col1Value = parseFloat(document.getElementById("col1").value);
+            const col2Value = parseFloat(document.getElementById("col2").value);
+            const col3Value = parseFloat(document.getElementById("col3").value);
+
+            if (isNaN(col1Value) || isNaN(col2Value) || isNaN(col3Value) || col1Value === 0 || col3Value === 0) {
+                document.getElementById("result-box").textContent = "ERROR!";
+                return;
+            }
+
+            const result = (col2Value / col1Value / col3Value) * 100;
+            document.getElementById("result-box").textContent = ` ${result.toFixed(2)}%`;
+        }
+
+        function nextColumn() {
+            const inputs = ["col0", "col1", "col2", "col3"];
+            const currentIndex = inputs.indexOf(activeInput.id);
+            const nextIndex = (currentIndex + 1) % inputs.length;
+            activeInput = document.getElementById(inputs[nextIndex]);
+            activeInput.focus(); 
+        }
+
+        document.getElementById("screenshot-btn").addEventListener("click", function () {
+      html2canvas(document.body).then(canvas => {
+        // Створення зображення
+        const imageData = canvas.toDataURL("image/png");
+
+        // Генерація дати та часу
+        const now = new Date();
+        const timestamp = now.toISOString().replace(/[:.-]/g, "_"); // Формат YYYY-MM-DD_HH_MM_SS
+
+        // Створення посилання для завантаження
+        const link = document.createElement("a");
+        link.download = `screenshot_${timestamp}.png`; // Ім'я файлу з часом
+        link.href = imageData;
+                link.click();
+            });
+        });
+    </script>
+    
+</body>
+</html>
+
+
+
+
