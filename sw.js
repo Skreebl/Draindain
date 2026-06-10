@@ -6,12 +6,12 @@ self.addEventListener('install', (event) => {
     caches.open(CACHE_NAME).then((cache) => {
       // Додаємо правильний шлях /Draincalc/ до всіх файлів
       return cache.addAll([
-        '/Draincalc/',
-        '/Draincalc/index.html',
-        '/Draincalc/styles.css',
+        '/Draindain/',
+        '/Draindain/index.html',
+        '/Draindain/styles.css',
         '/Draincalc/script.js',
-        '/Draincalc/icon-192x192.png',
-        '/Draincalc/icon-512x512.png'
+        '/Draindain/icon-192x192.png',
+        '/Draindain/icon-512x512.png'
       ]);
     })
   );
