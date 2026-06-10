@@ -2,19 +2,38 @@
 <html lang="pt">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>BoraRegar</title>
     <style>
+        /* Основні стилі */
         body {
             font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
             margin: 0;
             background-color: #f9f9f9;
+            overflow-x: hidden; /* Забороняємо горизонтальний скрол */
+            padding-bottom: 80px; /* Відступ для нижньої панелі */
         }
+
+        /* Стилі для "Екранів" (Вкладок) */
+        .view {
+            display: none; /* Сховано за замовчуванням */
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        .view.active {
+            display: flex; /* Показуємо тільки активний екран */
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Компоненти калькулятора */
         .time {
-            margin-top: 50px;
+            margin-top: 30px;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -68,6 +87,7 @@
             border-radius: 5px;
             font-size: 20px;
             cursor: pointer;
+            user-select: none;
         }
         .key:active {
             background-color: #ddd;
@@ -101,6 +121,46 @@
         .action-buttons button:active {
             background-color: #0056b3;
         }
+
+        /* Стилі нижньої панелі (Bottom Navigation) */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: #e9ecef; /* Сірий фон як на скріні */
+            display: flex;
+            justify-content: center;
+            padding: 10px;
+            box-sizing: border-box;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+        }
+        .nav-toggle {
+            display: flex;
+            width: 90%;
+            background-color: #e2e2e2;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .nav-btn {
+            flex: 1;
+            padding: 12px 0;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            background-color: transparent;
+            color: #555;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .nav-btn.active {
+            background-color: #4285F4; /* Синій колір як на твоєму скріні */
+            color: white;
+            border-radius: 10px;
+        }
     </style>
     <link rel="manifest" href="manifest.json" />
     <meta name="mobile-web-app-capable" content="yes" />
@@ -108,65 +168,126 @@
     <meta name="application-name" content="BoraRegar" />
     <meta name="apple-mobile-web-app-title" content="BoraRegar" />
     <meta name="msapplication-starturl" content="/index.html" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
 </head>
 <body>
-    <div class="time">
-        <a href="https://24timezones.com" style="text-decoration: none" class="clock24" id="tz24-1757844616-c1133-eyJob3VydHlwZSI6IjI0Iiwic2hvd2RhdGUiOiIxIiwic2hvd3NlY29uZHMiOiIxIiwic2hvd3RpbWV6b25lIjoiMCIsInR5cGUiOiJkIiwibGFuZyI6InB0In0=" title="Relógio" target="_blank" rel="nofollow"></a>
-        <script type="text/javascript" src="//w.24timezones.com/l.js" async></script>
-    </div>  
 
-    <div class="container">
-        <div class="column">
-            <label for="col0">VALVULA</label>
-            <input type="number" id="col0" placeholder=" - " readonly>
+    <div id="calc-view" class="view active">
+        <div class="time">
+            <a href="https://24timezones.com" style="text-decoration: none" class="clock24" id="tz24-1757844616-c1133-eyJob3VydHlwZSI6IjI0Iiwic2hvd2RhdGUiOiIxIiwic2hvd3NlY29uZHMiOiIxIiwic2hvd3RpbWV6b25lIjoiMCIsInR5cGUiOiJkIiwibGFuZyI6InB0In0=" title="Relógio" target="_blank" rel="nofollow"></a>
+            <script type="text/javascript" src="//w.24timezones.com/l.js" async></script>
+        </div>  
+
+        <div class="container">
+            <div class="column">
+                <label for="col0">VALVULA</label>
+                <input type="number" id="col0" placeholder=" - " readonly>
+            </div>
+            <div class="columns">
+                <div class="column">
+                    <label for="col1">Entrada</label>
+                    <input type="number" id="col1" placeholder=" - " readonly>
+                </div>
+                <div class="column">
+                    <label for="col2">Saída</label>
+                    <input type="number" id="col2" placeholder=" - " readonly>
+                </div>
+                <div class="column">
+                    <label for="col3">Vasos</label>
+                    <input type="number" id="col3" placeholder=" - " readonly>
+                </div>
+            </div>
+            <div id="result-box"> Introduza os dados </div>
         </div>
-        
-        <div class="columns">
-            <div class="column">
-                <label for="col1">Entrada</label>
-                <input type="number" id="col1" placeholder=" - " readonly>
-            </div>
-            <div class="column">
-                <label for="col2">Saída</label>
-                <input type="number" id="col2" placeholder=" - " readonly>
-            </div>
-            <div class="column">
-                <label for="col3">Vasos</label>
-                <input type="number" id="col3" placeholder=" - " readonly>
-            </div>
+
+        <div class="keyboard">
+            <div class="key" onclick="addNumber(1)">1</div>
+            <div class="key" onclick="addNumber(2)">2</div>
+            <div class="key" onclick="addNumber(3)">3</div>
+            <div class="key" onclick="addNumber(4)">4</div>
+            <div class="key" onclick="addNumber(5)">5</div>
+            <div class="key" onclick="addNumber(6)">6</div>
+            <div class="key" onclick="addNumber(7)">7</div>
+            <div class="key" onclick="addNumber(8)">8</div>
+            <div class="key" onclick="addNumber(9)">9</div>
+            <div class="key" onclick="clearAll()">C</div>
+            <div class="key" onclick="addNumber(0)">0</div>
+            <div class="key" onclick="deleteLast()">⌫</div>
         </div>
-        <div id="result-box"> Introduza os dados </div>
+
+        <div class="action-buttons">
+            <button onclick="nextColumn()">Próximo</button>
+            <button id="save-btn" style="background-color: #28a745; color: white;">Guardar Resultado</button>
+        </div>
     </div>
 
-    <div class="keyboard">
-        <div class="key" onclick="addNumber(1)">1</div>
-        <div class="key" onclick="addNumber(2)">2</div>
-        <div class="key" onclick="addNumber(3)">3</div>
-        <div class="key" onclick="addNumber(4)">4</div>
-        <div class="key" onclick="addNumber(5)">5</div>
-        <div class="key" onclick="addNumber(6)">6</div>
-        <div class="key" onclick="addNumber(7)">7</div>
-        <div class="key" onclick="addNumber(8)">8</div>
-        <div class="key" onclick="addNumber(9)">9</div>
-        <div class="key" onclick="clearAll()">C</div>
-        <div class="key" onclick="addNumber(0)">0</div>
-        <div class="key" onclick="deleteLast()">⌫</div>
+    <div id="history-view" class="view">
+        <div style="width: 90%; margin-top: 30px; display: flex; flex-direction: column; align-items: center; text-align: left;">
+            <h2 style="margin-bottom: 20px; text-align: center; color: #333;">Histórico de Drenagem</h2>
+            <div id="history-list" style="width: 100%; border-radius: 5px; min-height: 50px; padding: 5px; box-sizing: border-box;">
+                </div>
+            <button onclick="clearHistory()" style="margin-top: 20px; padding: 15px; background-color: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer; width: 100%; font-size: 16px;">Limpar Todo o Histórico</button>
+        </div>
     </div>
 
-    <div class="action-buttons">
-        <button onclick="nextColumn()">Próximo</button>
-        <button id="save-btn" style="background-color: #28a745; color: white;">Guardar Resultado</button>
-    </div>
-
-    <div id="history-container" style="width: 90%; margin-top: 20px; margin-bottom: 30px; display: flex; flex-direction: column; align-items: center; text-align: left;">
-        <h3 style="margin-bottom: 10px; text-align: center;">Histórico de Drenagem</h3>
-        <div id="history-list" style="width: 100%; border-radius: 5px; min-height: 50px; padding: 5px; box-sizing: border-box;">
-            </div>
-        <button onclick="clearHistory()" style="margin-top: 15px; padding: 10px; background-color: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer; width: 100%;">Limpar Tudo</button>
+    <div class="bottom-nav">
+        <div class="nav-toggle">
+            <button id="btn-calc" class="nav-btn active" onclick="switchView('calc')">Calculadora</button>
+            <button id="btn-hist" class="nav-btn" onclick="switchView('hist')">Histórico</button>
+        </div>
     </div>
 
     <script>
+        // --- ЛОГІКА ПЕРЕМИКАННЯ ЕКРАНІВ ТА СВАЙПІВ ---
+        
+        function switchView(viewName) {
+            const calcView = document.getElementById("calc-view");
+            const histView = document.getElementById("history-view");
+            const btnCalc = document.getElementById("btn-calc");
+            const btnHist = document.getElementById("btn-hist");
+
+            if (viewName === 'calc') {
+                calcView.classList.add("active");
+                histView.classList.remove("active");
+                btnCalc.classList.add("active");
+                btnHist.classList.remove("active");
+            } else if (viewName === 'hist') {
+                calcView.classList.remove("active");
+                histView.classList.add("active");
+                btnCalc.classList.remove("active");
+                btnHist.classList.add("active");
+                updateHistoryUI(); // Оновлюємо історію при відкритті
+            }
+        }
+
+        // Обробка жестів (Swipe)
+        let touchstartX = 0;
+        let touchendX = 0;
+
+        function handleSwipe() {
+            const swipeDistance = touchendX - touchstartX;
+            const threshold = 60; // Мінімальна довжина свайпу в пікселях
+
+            if (swipeDistance < -threshold) {
+                // Свайп вліво <- відкриваємо Історію
+                switchView('hist');
+            } else if (swipeDistance > threshold) {
+                // Свайп вправо -> відкриваємо Калькулятор
+                switchView('calc');
+            }
+        }
+
+        document.addEventListener('touchstart', e => {
+            touchstartX = e.changedTouches[0].screenX;
+        });
+
+        document.addEventListener('touchend', e => {
+            touchendX = e.changedTouches[0].screenX;
+            handleSwipe();
+        });
+
+
+        // --- ЛОГІКА КАЛЬКУЛЯТОРА ---
+
         let activeInput = document.getElementById("col0"); 
 
         document.querySelectorAll("input").forEach(input => {
@@ -232,15 +353,14 @@
             activeInput.focus(); 
         }
 
-        // ----- ЛОГІКА ЗБЕРЕЖЕННЯ (БЕЗ ВАЗ) -----
+        // --- ЛОГІКА ЗБЕРЕЖЕННЯ ІСТОРІЇ ---
+
         document.getElementById("save-btn").addEventListener("click", function() {
             const valvula = document.getElementById("col0").value;
             const entrada = document.getElementById("col1").value;
             const saida = document.getElementById("col2").value;
-            const resultText = document.getElementById("result-box").textContent.trim();
-
-            // Перевіряємо всі поля, щоб користувач не забув ввести Vasos
             const vasos = document.getElementById("col3").value;
+            const resultText = document.getElementById("result-box").textContent.trim();
 
             if (!valvula || !entrada || !saida || !vasos || resultText === "ERROR!" || resultText === "Introduza os dados") {
                 alert("Por favor, preencha todos os campos e certifique-se de que o resultado está correto!");
@@ -251,7 +371,6 @@
             const dateStr = now.toLocaleDateString('pt-PT'); 
             const timeStr = now.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' });
 
-            // Формуємо запис для історії. Як бачиш, vasos тут немає.
             const entry = {
                 date: dateStr,
                 time: timeStr,
@@ -261,12 +380,12 @@
                 result: resultText
             };
 
-            // Зберігаємо під новим ключем 'regaDataV3' щоб уникнути конфліктів зі старими даними
             let history = JSON.parse(localStorage.getItem('regaDataV3')) || [];
             history.unshift(entry); 
             localStorage.setItem('regaDataV3', JSON.stringify(history));
             
-            updateHistoryUI();
+            // Після збереження можна автоматично показати користувачу, що все ок
+            alert("Guardado com sucesso!");
         });
 
         function updateHistoryUI() {
@@ -276,7 +395,7 @@
             let history = JSON.parse(localStorage.getItem('regaDataV3')) || [];
 
             if (history.length === 0) {
-                historyList.innerHTML = "<div style='text-align: center; color: #777; background: #fff; padding: 10px; border: 1px solid #ccc; border-radius: 5px;'>Sem dados guardados</div>";
+                historyList.innerHTML = "<div style='text-align: center; color: #777; background: #fff; padding: 20px; border: 1px dashed #ccc; border-radius: 10px;'>Sem dados guardados</div>";
                 return;
             }
 
@@ -289,34 +408,35 @@
 
             for (const [date, valves] of Object.entries(groupedData)) {
                 const dateDetails = document.createElement("details");
-                dateDetails.style.marginBottom = "10px";
-                dateDetails.innerHTML = `<summary style="font-weight: bold; font-size: 16px; cursor: pointer; padding: 10px; background: #007bff; color: white; border-radius: 5px; outline: none;">📅 Data: ${date}</summary>`;
+                dateDetails.style.marginBottom = "12px";
+                dateDetails.innerHTML = `<summary style="font-weight: bold; font-size: 16px; cursor: pointer; padding: 12px; background: #4285F4; color: white; border-radius: 8px; outline: none; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">📅 Data: ${date}</summary>`;
                 
                 const dateContainer = document.createElement("div");
                 dateContainer.style.padding = "10px";
                 dateContainer.style.backgroundColor = "#fff";
-                dateContainer.style.border = "1px solid #ccc";
+                dateContainer.style.border = "1px solid #ddd";
                 dateContainer.style.borderTop = "none";
-                dateContainer.style.borderBottomLeftRadius = "5px";
-                dateContainer.style.borderBottomRightRadius = "5px";
+                dateContainer.style.borderBottomLeftRadius = "8px";
+                dateContainer.style.borderBottomRightRadius = "8px";
 
                 for (const [valve, entries] of Object.entries(valves)) {
                     const valveDetails = document.createElement("details");
                     valveDetails.style.marginBottom = "8px";
-                    valveDetails.innerHTML = `<summary style="font-weight: bold; font-size: 15px; cursor: pointer; padding: 8px; background: #e9ecef; border-radius: 5px; outline: none; border: 1px solid #ddd;">💧 Válvula ${valve}</summary>`;
+                    valveDetails.innerHTML = `<summary style="font-weight: bold; font-size: 15px; cursor: pointer; padding: 10px; background: #f1f3f4; border-radius: 6px; outline: none; border: 1px solid #ddd;">💧 Válvula ${valve}</summary>`;
                     
                     const entriesList = document.createElement("div");
                     entriesList.style.padding = "5px 10px";
                     entriesList.style.backgroundColor = "#fafafa";
-                    entriesList.style.border = "1px solid #ddd";
+                    entriesList.style.border = "1px solid #eee";
                     entriesList.style.borderTop = "none";
 
                     entries.forEach(entry => {
                         const row = document.createElement("div");
-                        row.style.padding = "8px 0";
+                        row.style.padding = "10px 0";
                         row.style.borderBottom = "1px dashed #ccc";
                         row.style.fontSize = "14px";
-                        row.innerHTML = `🕒 <strong>${entry.time}</strong> <br> Entrada: <strong>${entry.entrada}</strong> | Saída: <strong>${entry.saida}</strong> <br> Drenagem: <strong style="color: #007bff; font-size: 16px;">${entry.result}</strong>`;
+                        row.style.lineHeight = "1.5";
+                        row.innerHTML = `🕒 <strong style="color: #555;">${entry.time}</strong> <br> Entrada: <strong>${entry.entrada}</strong> | Saída: <strong>${entry.saida}</strong> <br> Drenagem: <strong style="color: #4285F4; font-size: 18px;">${entry.result}</strong>`;
                         entriesList.appendChild(row);
                     });
 
@@ -332,12 +452,13 @@
         }
 
         function clearHistory() {
-            if(confirm("Tem a certeza que deseja limpar todo o histórico?")) {
+            if(confirm("Tem a certeza que deseja apagar todo o histórico de medições?")) {
                 localStorage.removeItem('regaDataV3');
                 updateHistoryUI();
             }
         }
 
+        // Завантажуємо історію на старті
         window.addEventListener('load', updateHistoryUI);
     </script>
 </body>
