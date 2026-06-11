@@ -415,7 +415,7 @@
                 valvula: valvula,
                 entrada: entrada,
                 saida: saida,
-                vasos: vasos, // Тепер ми "тихо" зберігаємо вази для загального підрахунку
+                vasos: vasos, 
                 result: resultText
             };
 
@@ -433,6 +433,56 @@
                 localStorage.setItem('regaDataV3', JSON.stringify(history));
                 updateHistoryUI(); 
             }
+        }
+
+        // --- НОВА ФУНКЦІЯ РЕДАГУВАННЯ ЗАПИСУ ---
+        function editEntry(index) {
+            let history = JSON.parse(localStorage.getItem('regaDataV3')) || [];
+            let entry = history[index];
+            
+            if (!entry) return;
+
+            // Запитуємо нові дані
+            let newEntrada = prompt("Introduza a nova Entrada:", entry.entrada);
+            if (newEntrada === null) return; // Якщо натиснуто Cancel
+            
+            let newSaida = prompt("Introduza a nova Saída:", entry.saida);
+            if (newSaida === null) return;
+
+            let entVal = parseFloat(newEntrada);
+            let saiVal = parseFloat(newSaida);
+
+            if (isNaN(entVal) || isNaN(saiVal) || entVal <= 0) {
+                alert("Valores inválidos! Por favor introduza números corretos.");
+                return;
+            }
+
+            // Відновлюємо кількість ваз для правильного перерахунку
+            let vasosVal = 1;
+            if (entry.vasos) {
+                vasosVal = parseFloat(entry.vasos);
+            } else {
+                let oldEnt = parseFloat(entry.entrada);
+                let oldSai = parseFloat(entry.saida);
+                let oldRes = parseFloat(entry.result);
+                if (oldEnt > 0 && oldRes > 0) {
+                    vasosVal = (oldSai / oldEnt) * 100 / oldRes;
+                }
+            }
+
+            // Перераховуємо відсоток
+            let newResult = (saiVal / entVal / vasosVal) * 100;
+
+            // Оновлюємо об'єкт запису
+            entry.entrada = entVal.toString();
+            entry.saida = saiVal.toString();
+            entry.result = newResult.toFixed(2) + "%";
+
+            // Зберігаємо і оновлюємо UI
+            history[index] = entry;
+            localStorage.setItem('regaDataV3', JSON.stringify(history));
+            updateHistoryUI();
+            showToast("Atualizado com sucesso! ✏️");
         }
 
         function updateHistoryUI() {
@@ -480,7 +530,6 @@
 
                 for (const [valve, entries] of Object.entries(valves)) {
                     
-                    // --- ЛОГІКА ПІДРАХУНКУ СУМ ДЛЯ ЗАГОЛОВКА ВАЛВУЛИ ---
                     let sumEntrada = 0;
                     let sumSaida = 0;
                     let vasosForValve = 1;
@@ -489,11 +538,9 @@
                         sumEntrada += parseFloat(entry.entrada) || 0;
                         sumSaida += parseFloat(entry.saida) || 0;
                         
-                        // Якщо вази збережені, беремо їх
                         if (entry.vasos) {
                             vasosForValve = parseFloat(entry.vasos);
                         } else {
-                            // Для старих записів, де вази ще не зберігались, вираховуємо їх зворотним шляхом
                             let ent = parseFloat(entry.entrada);
                             let sai = parseFloat(entry.saida);
                             let res = parseFloat(entry.result); 
@@ -503,7 +550,6 @@
                         }
                     });
 
-                    // Рахуємо загальний відсоток для всієї валвули з логікою ваз
                     let valvePercentage = 0;
                     if (sumEntrada > 0 && vasosForValve > 0) {
                         valvePercentage = (sumSaida / sumEntrada / vasosForValve) * 100;
@@ -516,7 +562,6 @@
 
                     valveDetails.style.marginBottom = "8px";
                     
-                    // ДОДАЄМО СУМИ ТА ВІДСОТОК ДО ЗАГОЛОВКА
                     valveDetails.innerHTML = `<summary style="font-weight: bold; font-size: 15px; cursor: pointer; padding: 10px; background: #f1f3f4; border-radius: 6px; outline: none; border: 1px solid #ddd;">
                         💧 Válvula ${valve} 
                         <span style="font-size: 13px; font-weight: normal; color: #555; margin-left: 2px;">
@@ -543,6 +588,22 @@
                         infoDiv.style.lineHeight = "1.5";
                         infoDiv.innerHTML = `🕒 <strong style="color: #555;">${entry.time}</strong> <br> Entrada: <strong>${entry.entrada}</strong> | Saída: <strong>${entry.saida}</strong> <br> Drenagem: <strong style="color: #4285F4; font-size: 18px;">${entry.result}</strong>`;
                         
+                        // Контейнер для кнопок дій
+                        const actionDiv = document.createElement("div");
+                        actionDiv.style.display = "flex";
+                        actionDiv.style.gap = "5px";
+
+                        // Кнопка редагування
+                        const editBtn = document.createElement("button");
+                        editBtn.innerHTML = "✏️";
+                        editBtn.style.background = "none";
+                        editBtn.style.border = "none";
+                        editBtn.style.fontSize = "20px";
+                        editBtn.style.cursor = "pointer";
+                        editBtn.style.padding = "8px";
+                        editBtn.onclick = () => editEntry(entry.originalIndex);
+
+                        // Кнопка видалення
                         const deleteBtn = document.createElement("button");
                         deleteBtn.innerHTML = "🗑️";
                         deleteBtn.style.background = "none";
@@ -550,11 +611,14 @@
                         deleteBtn.style.fontSize = "22px";
                         deleteBtn.style.cursor = "pointer";
                         deleteBtn.style.color = "#dc3545";
-                        deleteBtn.style.padding = "10px";
+                        deleteBtn.style.padding = "8px";
                         deleteBtn.onclick = () => deleteEntry(entry.originalIndex);
 
+                        actionDiv.appendChild(editBtn);
+                        actionDiv.appendChild(deleteBtn);
+
                         row.appendChild(infoDiv);
-                        row.appendChild(deleteBtn);
+                        row.appendChild(actionDiv);
                         entriesList.appendChild(row);
                     });
 
